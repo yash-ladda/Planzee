@@ -12,6 +12,12 @@ const userSchema = new mongoose.Schema({
             unique: true,
             trim: true,
         },
+        password: {
+            type: String,
+            required: true,
+            minlength: 8,
+            select: false,
+        },
         email: {
             type: String, 
             required: true,
@@ -19,15 +25,15 @@ const userSchema = new mongoose.Schema({
             lowercase: true,
             trim: true,
         },
-        profileImage: {
-            type: String,
-            default: "https://cdn-icons-png.freepik.com/256/6681/6681213.png?semt=ais_white_label",
-        },
         bio: {
             type: String,
             trim: true,
             maxlength: 200
-        }
+        },
+        profileImage: {
+            type: String,
+            default: "https://cdn-icons-png.freepik.com/256/6681/6681213.png?semt=ais_white_label",
+        },
     },
     {
         timestamps: true
