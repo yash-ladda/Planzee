@@ -89,7 +89,7 @@ export const login = async (req, res) => {
             );
         }
 
-        //send the token
+        //send the token and user info
         res.status(201).json({
             token, 
             user: {
