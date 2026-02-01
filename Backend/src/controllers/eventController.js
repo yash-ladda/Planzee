@@ -1,6 +1,4 @@
 import Event from "../models/Event.js";
-import Participation from "../models/Participation.js";
-import Partipation from "../models/Participation.js";
 
 export const createEvent = async (req, res) => {
 
@@ -181,66 +179,6 @@ export const getSingleEvent = async (req, res) => {
             return res.status(400).json({ message: "Invalid event id" });
         }
 
-        console.log(err);
-        return res.status(500).json({ message: "Server error" });
-    }
-};
-
-export const joinEvent = async (req, res) => {
-    try {
-
-        const { id } = req.params;
-
-        if (!req.user) {
-            return res.status(401).json({ message: "User not authenticated" });
-        }
-
-        const event = await Event.findById(id);
-
-        if (!event) {
-            return res.status(404).json({ message: "Event not found" });
-        }
-
-        if (event.state !== "REG_OPEN") {
-            return res.status(400).json({ message: "Event is not open for registration" });
-        }
-
-        const userId = req.user._id;
-
-        // check if already joined
-        const isAlreadyJoined = await Participation.findOne({
-            userId,
-            eventId: id
-        });
-
-        if (isAlreadyJoined) {
-            return res.status(400).json({ message: "You are already joined for this event" });
-        }
-
-        // count active attendees
-        const activeCount = await Participation.countDocuments({
-            eventId: id,
-            role: "ATTENDEE",
-            status: "ACTIVE"
-        });
-
-        // decide status
-        let status = "ACTIVE";
-
-        if (activeCount >= event.capacity) {
-            status = "WAITLISTED";
-        }
-
-        const participation = await Participation.create({
-            userId,
-            eventId: id,
-            role: "ATTENDEE",
-            status
-        });
-
-        return res.status(201).json({ participation });
-
-    } catch (err) {
         console.log(err);
         return res.status(500).json({ message: "Server error" });
     }
