@@ -109,3 +109,48 @@ export const editEvent = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getEvent = async (req, res) => {
+    try {
+        const { category, type } = req.query;
+
+        const query = {};
+        const now = new Date();
+
+        // category filter
+        if (category) {
+            query.category = category;
+        }
+
+        // type filters
+        if (type === "live") {
+            query.state = "LIVE";
+        }
+
+        if (type === "upcoming") {
+            query.state = { $in: ["DRAFT", "REG_OPEN"] };
+            query.startTime = { $gt: now };
+        }
+
+        if (type === "registration") {
+            query.state = "REG_OPEN";
+            query.startTime = { $gt: now };
+        }
+
+        if (type === "past") {
+            query.state = "COMPLETED";
+        }
+
+        if (type === "draft") {
+            query.state = "DRAFT";
+        }
+
+        const events = await Event.find(query).sort({ startTime: 1 });
+
+        return res.status(200).json({ events });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
