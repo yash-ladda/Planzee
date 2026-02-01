@@ -151,6 +151,35 @@ export const getEvent = async (req, res) => {
 
     } catch (err) {
         console.log(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const getSingleEvent = async (req, res) => {
+
+    try {
+
+        //extract id from req.params
+        const {id} = req.params;
+
+        //find the event by id
+        const event = await Event.findById(id);
+
+        //if event not found the send this response
+        if(!event) {
+            return res.status(404).json({message: "Event not found"});
+        }
+
+        //else return the event
+        res.status(200).json({event});
+    }
+    catch (err) {
+        // invalid ObjectId case
+        if (err.name === "CastError") {
+            return res.status(400).json({ message: "Invalid event id" });
+        }
+
+        console.log(err);
         return res.status(500).json({ message: "Server error" });
     }
 };
