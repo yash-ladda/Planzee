@@ -1,4 +1,5 @@
 import Event from "../models/Event.js";
+import Participation from "../models/Participation.js";
 
 export const createEvent = async (req, res) => {
 
@@ -32,6 +33,14 @@ export const createEvent = async (req, res) => {
             endTime,
             capacity,
             createdBy
+        });
+
+        //create participation to store the role of organizer in participation
+        await Participation.create({
+            userId: user._id,
+            eventId: event._id,
+            role: "ORGANIZER",
+            status: "ACTIVE",
         });
 
         //send response of created event
