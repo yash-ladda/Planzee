@@ -135,3 +135,46 @@ export const leaveEvent = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+export const joinAsVolunteer = async (req, res) => {
+
+    try {
+
+        const {id} = req.params;
+
+        if(!req.user) {
+            return res.status(401).json({ message: "User not authenticated" });
+        }
+
+        const event = await Event.findById(id);
+
+        if(!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        const userId = req.user._id;
+
+        const isAlreadyJoined = await Participation.findOne({
+            userId,
+            eventId: id
+        });
+
+        if(isAlreadyJoined) {
+            return res.status(400).json({ message: "You are already joined for this event"});
+        }
+
+        const participation = await Participation.create({
+            userId,
+            eventId: id,
+            role: "VOLUNTEER",
+            status: "ACTIVE"
+        });
+
+        return res.status(201).json({ participation });
+
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
