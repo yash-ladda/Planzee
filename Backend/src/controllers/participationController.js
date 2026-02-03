@@ -239,3 +239,50 @@ export const getEventParticipants = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getMyEvents = async (req, res) => {
+    try {
+
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ message: "User not authenticated" });
+        }
+
+        const userId = user._id;
+
+        const organized = await Participation.find({
+            userId,
+            role: "ORGANIZER",
+            status: "ACTIVE"
+        }).populate("eventId");
+
+        const volunteered = await Participation.find({
+            userId,
+            role: "VOLUNTEER",
+            status: "ACTIVE"
+        }).populate("eventId");
+
+        const attended = await Participation.find({
+            userId,
+            role: "ATTENDEE",
+            status: "ACTIVE"
+        }).populate("eventId");
+
+        const pastAttended = await Participation.find({
+            userId,
+            role: "ATTENDEE",
+            status: "LEFT"
+        }).populate("eventId");
+
+        return res.status(200).json({
+            organized,
+            volunteered,
+            attended,
+            pastAttended
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
