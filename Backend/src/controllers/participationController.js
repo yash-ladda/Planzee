@@ -286,3 +286,65 @@ export const getMyEvents = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getMyOrganizedEventsDashboard = async (req, res) => {
+    
+    try {
+
+        const user = req.user;
+        if(!user) {
+            return res.status(401).json({ message: "User not authenticated"})
+        }
+
+        const organizedEvents = await Participation.find({
+            userId: req.user._id,
+            role: "ORGANIZER",
+            status: "ACTIVE"
+        });
+
+        // find() always returns array
+        if (organizedEvents.length === 0) {
+            return res.status(200).json({ myOrganizedEvents: [] });
+        }
+
+        let myOrganizedEvents = [];
+
+        for(let p of organizedEvents) {
+            const obj = {};
+            obj.counts = {};
+
+            const event = await Event.findById(p.eventId).select(
+                "title startTime endTime state category"
+            );
+
+            if (!event) continue;
+            obj.event = event;
+
+            obj.counts.attendees = await Participation.countDocuments({
+                eventId: p.eventId,
+                role: "ATTENDEE",
+                status: "ACTIVE"
+            });
+
+            obj.counts.waitlisted = await Participation.countDocuments({
+                eventId: p.eventId,
+                role: "ATTENDEE",
+                status: "WAITLISTED"
+            });
+
+            obj.counts.volunteers = await Participation.countDocuments({
+                eventId: p.eventId,
+                role: "VOLUNTEER",
+                status: "ACTIVE"
+            });
+
+            myOrganizedEvents.push(obj);
+        }
+
+        res.status(200).json({myOrganizedEvents});
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
