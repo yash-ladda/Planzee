@@ -57,3 +57,39 @@ export const createReview = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getReviews = async (req, res) => {
+    try {
+
+        const { id: eventId } = req.params;
+
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        const reviews = await Review.find({ eventId });
+
+        const totalReviews = reviews.length;
+
+        let avgRating = 0;
+
+        if (totalReviews > 0) {
+            let sum = 0;
+            for (const review of reviews) {
+                sum += review.rating;
+            }
+            avgRating = sum / totalReviews;
+        }
+
+        return res.status(200).json({
+            reviews,
+            totalReviews,
+            avgRating
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
