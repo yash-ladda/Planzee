@@ -93,3 +93,29 @@ export const getReviews = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getPendingReviews = async (req, res) => {
+
+    try {
+
+        const user = req.user;
+        if(!user) {
+            return res.status(400).json({ message: "User not authenticated" });
+        }
+
+        const participations = await Participation.find({
+            userId: user._id,
+            status: { $in: ["ACTIVE", "LEFT"] },
+            state: "COMPLETED"
+        });
+
+        const isAlreadyReviewed = await Review.findOne({
+            eventId,
+            userId: user._id
+        }); 
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
