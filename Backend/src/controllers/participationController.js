@@ -1,7 +1,7 @@
 import Participation from "../models/Participation.js";
 import Event from "../models/Event.js";
 
-export const joinEvent = async (req, res) => {
+export const joinEvent = async (req, res, next) => {
     try {
 
         const { id } = req.params;
@@ -57,11 +57,11 @@ export const joinEvent = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const leaveEvent = async (req, res) => {
+export const leaveEvent = async (req, res, next) => {
     try {
 
         const { id } = req.params;
@@ -132,23 +132,23 @@ export const leaveEvent = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const joinAsVolunteer = async (req, res) => {
+export const joinAsVolunteer = async (req, res, next) => {
 
     try {
 
-        const {id} = req.params;
+        const { id } = req.params;
 
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).json({ message: "User not authenticated" });
         }
 
         const event = await Event.findById(id);
 
-        if(!event) {
+        if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
 
@@ -159,8 +159,8 @@ export const joinAsVolunteer = async (req, res) => {
             eventId: id
         });
 
-        if(isAlreadyJoined) {
-            return res.status(400).json({ message: "You are already joined for this event"});
+        if (isAlreadyJoined) {
+            return res.status(400).json({ message: "You are already joined for this event" });
         }
 
         const participation = await Participation.create({
@@ -175,11 +175,11 @@ export const joinAsVolunteer = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getEventParticipants = async (req, res) => {
+export const getEventParticipants = async (req, res, next) => {
 
     try {
 
@@ -205,8 +205,8 @@ export const getEventParticipants = async (req, res) => {
             status: "ACTIVE"
         });
 
-        if(!participation) {
-            return res.status(403).json({ message: "You are not allowed to see the participants"});
+        if (!participation) {
+            return res.status(403).json({ message: "You are not allowed to see the participants" });
         }
 
         const attendees = await Participation.find({
@@ -230,17 +230,17 @@ export const getEventParticipants = async (req, res) => {
         return res.status(200).json({
             "attendees": attendees,
             "waitlisted": waitlisted,
-            "volunteers": volunteers   
+            "volunteers": volunteers
         });
 
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getMyEvents = async (req, res) => {
+export const getMyEvents = async (req, res, next) => {
     try {
 
         const user = req.user;
@@ -283,17 +283,17 @@ export const getMyEvents = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getMyOrganizedEventsDashboard = async (req, res) => {
-    
+export const getMyOrganizedEventsDashboard = async (req, res, next) => {
+
     try {
 
         const user = req.user;
-        if(!user) {
-            return res.status(401).json({ message: "User not authenticated"})
+        if (!user) {
+            return res.status(401).json({ message: "User not authenticated" })
         }
 
         const organizedEvents = await Participation.find({
@@ -309,7 +309,7 @@ export const getMyOrganizedEventsDashboard = async (req, res) => {
 
         let myOrganizedEvents = [];
 
-        for(let p of organizedEvents) {
+        for (let p of organizedEvents) {
             const obj = {};
             obj.counts = {};
 
@@ -341,10 +341,10 @@ export const getMyOrganizedEventsDashboard = async (req, res) => {
             myOrganizedEvents.push(obj);
         }
 
-        res.status(200).json({myOrganizedEvents});
+        res.status(200).json({ myOrganizedEvents });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };

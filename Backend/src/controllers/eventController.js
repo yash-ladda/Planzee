@@ -1,21 +1,21 @@
 import Event from "../models/Event.js";
 import Participation from "../models/Participation.js";
 
-export const createEvent = async (req, res) => {
+export const createEvent = async (req, res, next) => {
 
-    try {   
-            //read fields to add in event
-        const {title, description, category, locationType, locationDetails, joinLink, startTime, endTime, capacity} = req.body;
+    try {
+        //read fields to add in event
+        const { title, description, category, locationType, locationDetails, joinLink, startTime, endTime, capacity } = req.body;
 
         //check if required field is missing
-        if(!title || !category || !locationType || !startTime || !endTime || capacity < 1) {
-            return res.status(400).json({message: "Check if any imp field is missing"});
+        if (!title || !category || !locationType || !startTime || !endTime || capacity < 1) {
+            return res.status(400).json({ message: "Check if any imp field is missing" });
         }
 
         //check if user exists or not
         const user = req.user;
-        if(!user) {
-            return res.status(401).json({ message: "User not authenticated"});
+        if (!user) {
+            return res.status(401).json({ message: "User not authenticated" });
         }
 
         //extract user from req (coz we attached user to req in the authMiddleware)
@@ -23,7 +23,7 @@ export const createEvent = async (req, res) => {
 
         //add event in Event schema
         const event = await Event.create({
-            title, 
+            title,
             description,
             category,
             locationType,
@@ -50,11 +50,11 @@ export const createEvent = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({message: "Server error"});
+        next(err);
     }
 };
 
-export const editEvent = async (req, res) => {
+export const editEvent = async (req, res, next) => {
     try {
 
         const user = req.user;
@@ -115,11 +115,11 @@ export const editEvent = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getEvent = async (req, res) => {
+export const getEvent = async (req, res, next) => {
     try {
         const { category, type } = req.query;
 
@@ -160,27 +160,27 @@ export const getEvent = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getSingleEvent = async (req, res) => {
+export const getSingleEvent = async (req, res, next) => {
 
     try {
 
         //extract id from req.params
-        const {id} = req.params;
+        const { id } = req.params;
 
         //find the event by id
         const event = await Event.findById(id);
 
         //if event not found the send this response
-        if(!event) {
-            return res.status(404).json({message: "Event not found"});
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
         }
 
         //else return the event
-        res.status(200).json({event});
+        res.status(200).json({ event });
     }
     catch (err) {
         // invalid ObjectId case
@@ -189,6 +189,6 @@ export const getSingleEvent = async (req, res) => {
         }
 
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };

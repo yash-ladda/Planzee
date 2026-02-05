@@ -3,7 +3,7 @@ import Review from "../models/Review.js";
 import Participation from "../models/Participation.js";
 import Event from "../models/Event.js";
 
-export const createReview = async (req, res) => {
+export const createReview = async (req, res, next) => {
 
     try {
 
@@ -13,12 +13,12 @@ export const createReview = async (req, res) => {
         }
         const userId = user._id;
 
-        const {id: eventId} = req.params;
+        const { id: eventId } = req.params;
         const event = await Event.findById(eventId);
-        if(!event) {
+        if (!event) {
             return res.status(400).json({ message: "Event not found" });
         }
-        if(event.state !== "COMPLETED") {
+        if (event.state !== "COMPLETED") {
             return res.status(400).json({ message: "Event is not yet completed, please come when event is completed" });
         }
 
@@ -27,19 +27,19 @@ export const createReview = async (req, res) => {
             userId,
             status: { $in: ["ACTIVE", "LEFT"] }
         });
-        if(!isParticipatedInEvent) {
-            return res.status(400).json({ message: "You are not participated in event, cannot give review"});
+        if (!isParticipatedInEvent) {
+            return res.status(400).json({ message: "You are not participated in event, cannot give review" });
         }
 
         const isAlreadyReviewed = await Review.findOne({
             userId,
             eventId
         });
-        if(isAlreadyReviewed) {
+        if (isAlreadyReviewed) {
             return res.status(400).json({ message: "You have already given review for this event" });
         }
 
-        const {rating, comment, isAnonymous} = req.body;
+        const { rating, comment, isAnonymous } = req.body;
 
         const review = await Review.create({
             userId,
@@ -54,11 +54,11 @@ export const createReview = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getReviews = async (req, res) => {
+export const getReviews = async (req, res, next) => {
     try {
 
         const { id: eventId } = req.params;
@@ -90,16 +90,16 @@ export const getReviews = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
-export const getPendingReviews = async (req, res) => {
+export const getPendingReviews = async (req, res, next) => {
 
     try {
 
         const user = req.user;
-        if(!user) {
+        if (!user) {
             return res.status(400).json({ message: "User not authenticated" });
         }
 
@@ -112,10 +112,10 @@ export const getPendingReviews = async (req, res) => {
         const isAlreadyReviewed = await Review.findOne({
             eventId,
             userId: user._id
-        }); 
+        });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
