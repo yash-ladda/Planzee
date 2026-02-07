@@ -95,26 +95,42 @@ export const getReviews = async (req, res, next) => {
 };
 
 export const getPendingReviews = async (req, res, next) => {
-
     try {
 
         const user = req.user;
         if (!user) {
-            return res.status(400).json({ message: "User not authenticated" });
+            return res.status(401).json({ message: "User not authenticated" });
         }
 
         const participations = await Participation.find({
             userId: user._id,
-            status: { $in: ["ACTIVE", "LEFT"] },
-            state: "COMPLETED"
+            role: "ATTENDEE",
+            status: { $in: ["ACTIVE", "LEFT"] }
         });
 
-        const isAlreadyReviewed = await Review.findOne({
-            eventId,
-            userId: user._id
-        });
-    }
-    catch (err) {
+        let pendingReviews = [];
+
+        for (const p of participations) {
+
+            const event = await Event.findById(p.eventId);
+
+            if (!event) continue;
+
+            if (event.state !== "COMPLETED") continue;
+
+            const isAlreadyReviewed = await Review.findOne({
+                eventId: p.eventId,
+                userId: user._id
+            });
+
+            if (!isAlreadyReviewed) {
+                pendingReviews.push(event);
+            }
+        }
+
+        return res.status(200).json({ pendingReviews });
+
+    } catch (err) {
         console.log(err);
         next(err);
     }

@@ -6,11 +6,6 @@ export const register = async (req, res, next) => {
     try {
         const { name, username, password, email } = req.body;
 
-        //check if any field is missing
-        if (!name || !username || !password || !email) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
         //check if username or email already exists
         const usernameExists = await User.findOne({ username });
         if (usernameExists) {
@@ -69,8 +64,6 @@ export const login = async (req, res, next) => {
         if (!user) {
             return res.status(409).json({ message: "User not found" });
         }
-
-        console.log(user);
 
         //check if given password matches with original password
         const isMatch = await bcrypt.compare(password, user.password);
