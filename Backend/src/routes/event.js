@@ -9,7 +9,7 @@ const router  = express.Router();
 
 router.post("/", protect, validate(createEventValidator, "body"), createEvent);
 router.put("/:id", protect, validate(eventParamsValidator, "params"), validate(editEventValidator, "body"), editEvent);
-router.get("/", validate(getEventQueryValidator, "query"), getEvent);
+router.get("/", getEvent);
 router.get("/:id", validate(eventParamsValidator, "params"), getSingleEvent);
 
 export default router;

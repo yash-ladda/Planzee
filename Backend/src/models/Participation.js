@@ -44,6 +44,4 @@ const participationSchema = new mongoose.Schema({
     }
 );
 
-participationSchema.index({userId: 1, eventId: 1}, {unique: true});
-
 export default mongoose.model("Participation", participationSchema);

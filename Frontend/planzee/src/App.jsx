@@ -1,24 +1,24 @@
+import { useEffect, useState } from "react";
+import api from "./api/axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Link } from "react-router-dom";
 
-function Home() {
-  return <h2>Home Page</h2>;
-}
-
-function Login() {
-  return <h2>Login Page</h2>;
-}
-
-function Register() {
-  return <h2>Register Page</h2>;
-}
+import EventsList from "./pages/EventsList";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Navbar from "./components/navbar";
 
 export default function App() {
-  return (
-        <>
-        <Home />
-        <Login />
-        <Register />
-        </>
-  );
+
+    return (
+        <div>
+            <BrowserRouter>
+                <Navbar />
+                <Routes>
+                    <Route  path="/events" element={<EventsList />}/>
+                    <Route  path="/login" element={<Login />}/>
+                    <Route  path="/signup" element={<Signup />}/>
+                </Routes>
+            </BrowserRouter>
+        </div>
+    );
 }

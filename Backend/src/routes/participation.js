@@ -1,7 +1,7 @@
 import express from "express";
 import { protect } from "../middlewares/authMiddleware.js";
 import { getEventParticipants, getMyEvents, getMyOrganizedEventsDashboard, joinAsVolunteer, joinEvent, leaveEvent } from "../controllers/participationController.js";
-import { validate } from "../middlewares/validate.js";
+import { validate } from "../middlewares/validateMiddleware.js";
 import { reqParamsValidator } from "../validators/req.params.validator.js";
 
 const router = express.Router();

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { editEvent } from "../controllers/eventController";
+import { editEvent } from "../controllers/eventController.js";
 
 export const createEventValidator = z.object({
     title: z.string().min(3, "Title should include at least 3 characters"),

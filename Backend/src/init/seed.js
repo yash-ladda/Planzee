@@ -11,7 +11,7 @@ import eventsData from "./data/events.js";
 import participationsData from "./data/participations.js";
 import reviewsData from "./data/reviews.js";
 
-dotenv.config();
+dotenv.config({ path: "../../.env" });
 
 const seed = async () => {
     try {

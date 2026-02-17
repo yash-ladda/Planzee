@@ -42,7 +42,7 @@ export const joinEvent = async (req, res, next) => {
         // decide status
         let status = "ACTIVE";
 
-        if (activeCount >= event.capacity) {
+        if (activeCount >= event.capacity+1) {
             status = "WAITLISTED";
         }
 
@@ -137,9 +137,7 @@ export const leaveEvent = async (req, res, next) => {
 };
 
 export const joinAsVolunteer = async (req, res, next) => {
-
     try {
-
         const { id } = req.params;
 
         if (!req.user) {
@@ -147,23 +145,37 @@ export const joinAsVolunteer = async (req, res, next) => {
         }
 
         const event = await Event.findById(id);
-
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
 
         const userId = req.user._id;
 
-        const isAlreadyJoined = await Participation.findOne({
+        // find ANY participation (ignore status)
+        let participation = await Participation.findOne({
             userId,
             eventId: id
         });
 
-        if (isAlreadyJoined) {
-            return res.status(400).json({ message: "You are already joined for this event" });
+        if (participation) {
+
+            if (participation.status !== "LEFT") {
+                return res.status(400).json({
+                    message: "You are already joined for this event"
+                });
+            }
+
+            participation.status = "ACTIVE";
+            participation.role = "VOLUNTEER";
+            participation.leftAt = null;
+            participation.joinedAt = new Date();
+
+            await participation.save();
+
+            return res.status(200).json({ participation });
         }
 
-        const participation = await Participation.create({
+        participation = await Participation.create({
             userId,
             eventId: id,
             role: "VOLUNTEER",
@@ -172,8 +184,7 @@ export const joinAsVolunteer = async (req, res, next) => {
 
         return res.status(201).json({ participation });
 
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
         next(err);
     }

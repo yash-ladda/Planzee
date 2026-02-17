@@ -7,7 +7,7 @@ import { reqParamsValidator } from "../validators/req.params.validator.js";
 
 const router = express.Router();
 
-router.post("/events/:id/reviews", protect, validate(createReviewValidator), createReview);
-router.get("/events/:id/reviews", validate(reqParamsValidator), getReviews);
+router.post("/events/:id/reviews", protect, validate(createReviewValidator, "body"), createReview);
+router.get("/events/:id/reviews", validate(reqParamsValidator, "params"), getReviews);
 
 export default router;
