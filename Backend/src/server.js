@@ -3,6 +3,9 @@ import app from "./app.js";
 import connectDB from './config/db.js';
 import './jobs/eventStateUpdater.js';
 import cors from "cors";
+import express from "express";
+
+app.use(express.json());
 
 app.use(cors());
 
