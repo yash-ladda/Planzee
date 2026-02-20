@@ -21,12 +21,16 @@ export default function EventsList() {
         <div>
             <h2>Planzee Events</h2>
 
-            {events.map((event) => (
-                <div key={event._id}>
-                    <h3>{event.title}</h3>
-                    <p>{event.category}</p>
-                </div>
-            ))}
+            {events.length > 0 ? (
+                events.map((event) => (
+                    <div key={event._id}>
+                        <h3>{event.title}</h3>
+                        <p>{event.category}</p>
+                    </div>
+                ))
+            ) : (
+                <h3>No events found</h3>
+            )}
         </div>
     );
-};
+}
