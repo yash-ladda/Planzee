@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 
 export default function Login() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -23,54 +25,34 @@ export default function Login() {
         try {
             const res = await api.post("/auth/login", formData);
 
-            localStorage.setItem("token", res.data.token);
+            login(res.data.token); // 🔥 use context login
 
-            alert("Login successful!");
-
-            navigate("/"); // redirect to home
+            navigate("/");
         } catch (error) {
-            console.log(error.response);
-
-            let message = undefined;
-
-            if (error.response.data.errors) {
-                message = Object.values(error.response.data.errors)[0];
-            }
-            else {
-                message = error.response.data.message;
-            }
-
-            console.log(message);
-
-            alert(message);
+            alert("Login failed");
         }
     };
 
     return (
         <div>
             <h2>Login</h2>
-
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
                     name="email"
                     placeholder="Email"
-                    value={formData.email}
                     onChange={handleChange}
                 />
                 <br /><br />
-
                 <input
                     type="password"
                     name="password"
                     placeholder="Password"
-                    value={formData.password}
                     onChange={handleChange}
                 />
                 <br /><br />
-
                 <button type="submit">Login</button>
             </form>
         </div>
     );
-};
+}

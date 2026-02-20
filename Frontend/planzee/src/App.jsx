@@ -1,24 +1,35 @@
-import { useEffect, useState } from "react";
-import api from "./api/axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import Profile from "./pages/Profile";
 
 import EventsList from "./pages/EventsList";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Navbar from "./components/navbar";
+import Register from "./pages/Signup";
+import Navbar from "./components/Navbar";
 
-export default function App() {
-
+function App() {
     return (
-        <div>
+        <AuthProvider>
             <BrowserRouter>
                 <Navbar />
                 <Routes>
-                    <Route  path="/events" element={<EventsList />}/>
-                    <Route  path="/login" element={<Login />}/>
-                    <Route  path="/signup" element={<Signup />}/>
+                    <Route path="/" element={<EventsList />} />
+                    <Route path="/events" element={<EventsList />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
                 </Routes>
             </BrowserRouter>
-        </div>
+        </AuthProvider>
     );
 }
+
+export default App;

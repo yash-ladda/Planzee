@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Signup() {
 
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -29,7 +31,8 @@ export default function Signup() {
             const res = await api.post("/auth/register", formData);
             
             // store token in localStorage
-            localStorage.setItem("token", res.data.token);
+            // localStorage.setItem("token", res.data.token);
+            login(res.data.token);
 
             alert("Registration successful!");
 
