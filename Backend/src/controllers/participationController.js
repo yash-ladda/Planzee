@@ -51,7 +51,7 @@ export const joinEvent = async (req, res, next) => {
         if(isAlreadyJoined) {
             participation = await Participation.findOneAndUpdate(
                 { _id: isAlreadyJoined._id},
-                {status: status},
+                {status: status, role: "ATTENDEE"},
                 {new: true}
             );
         }

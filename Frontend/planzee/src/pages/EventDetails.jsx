@@ -52,6 +52,19 @@ export default function EventDetails () {
         }
     };    
 
+    const handleJoinAsVolunteer = async () => {
+        try {
+            await api.post(`/events/${id}/volunteer`);
+            const updated = await api.get(`/events/${id}`);
+            setEvent(updated.data.event);
+            setParticipation(updated.data.participation);
+            alert("Joined as volunteer");
+        }
+        catch (err) {
+            console.log("Err: ", err.response?.data);
+        }
+    };
+
     return (
         <div>
             {!event ? 
@@ -103,7 +116,10 @@ export default function EventDetails () {
                                 )}
                                 {
                                     !participation && event.state == "REG_OPEN" && (
-                                        <button onClick={handleJoinEvent}>Join Event</button>
+                                        <div>
+                                            <button onClick={handleJoinEvent}>Join Event</button>
+                                            <button onClick={handleJoinAsVolunteer}>Join as volunteer</button>
+                                        </div>
                                     )
                                 }
                                 </div>
