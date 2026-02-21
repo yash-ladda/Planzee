@@ -8,6 +8,7 @@ export default function EventDetails () {
 
     const [event, setEvent] = useState(null);
     const [participation, setParticipation] = useState(null);
+    const [participants, setParticipants] = useState(null);
 
     const {isLoggedIn} = useAuth();
 
@@ -26,6 +27,22 @@ export default function EventDetails () {
         getEvent();          
 
     }, [id]);
+
+    const isOrganizer = participation?.role === "ORGANIZER";
+
+    useEffect(() => {
+        if (isOrganizer) {
+            const getParticipants = async () => {
+                try {
+                    const res = await api.get(`/events/${id}/participants`);
+                    setParticipants(res.data);
+                } catch (err) {
+                    console.log("Err: ", err);
+                }
+            };
+            getParticipants();
+        }
+    }, [id, isOrganizer]);
 
     const handleJoinEvent = async () => {
         try {
@@ -111,7 +128,7 @@ export default function EventDetails () {
                         {isLoggedIn &&
                             (   
                                 <div>
-                                {participation && (
+                                {participation && !isOrganizer && (
                                     <button onClick={handleLeaveEvent}>Leave Event</button>
                                 )}
                                 {
@@ -122,6 +139,60 @@ export default function EventDetails () {
                                         </div>
                                     )
                                 }
+                                </div>
+                            )
+                        }
+
+                        {isLoggedIn &&
+                            isOrganizer && 
+                                participants  && (
+                                <div>
+                                    <br /><br />
+                                    <h2>Participants of this Event</h2>   
+                                    {
+                                        participants?.attendees?.length > 0 && (
+                                            <div>
+                                                <h3>Attendees</h3>
+                                                <ul>
+                                                    {   
+                                                        participants.attendees.map((p) => (
+                                                            <li key={p._id}>{p._id}</li>
+                                                        ))
+                                                    }
+                                                </ul>
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        participants?.waitlisted?.length > 0 && (
+                                            <div>
+                                                <h3>Waitlisted participants</h3>
+                                                <ul>
+                                                    {
+                                                        participants.waitlisted.map((p) => (
+                                                            <li key={p._id}>{p._id}</li>
+                                                        ))
+                                                    }
+                                                </ul>
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        participants?.volunteers?.length > 0 && (
+                                            <div>
+                                                <h3>Volunteers</h3>
+                                                <ul>
+                                                    {
+                                                        participants.volunteers.map((p) => (
+                                                            <li key={p._id}>{p._id}</li>
+                                                        ))
+                                                    }
+                                                </ul>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                             )
                         }
