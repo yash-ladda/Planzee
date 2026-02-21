@@ -28,7 +28,7 @@ export const joinEvent = async (req, res, next) => {
             eventId: id
         });
 
-        if (isAlreadyJoined) {
+        if (isAlreadyJoined && isAlreadyJoined.status == "ACTIVE") {
             return res.status(400).json({ message: "You are already joined for this event" });
         }
 
@@ -42,16 +42,27 @@ export const joinEvent = async (req, res, next) => {
         // decide status
         let status = "ACTIVE";
 
-        if (activeCount >= event.capacity+1) {
+        if (activeCount >= event.capacity) {
             status = "WAITLISTED";
         }
 
-        const participation = await Participation.create({
-            userId,
-            eventId: id,
-            role: "ATTENDEE",
-            status
-        });
+        let participation = undefined;
+
+        if(isAlreadyJoined) {
+            participation = await Participation.findOneAndUpdate(
+                { _id: isAlreadyJoined._id},
+                {status: status},
+                {new: true}
+            );
+        }
+        else {
+            participation = await Participation.create({
+                userId,
+                eventId: id,
+                role: "ATTENDEE",
+                status
+            });
+        }
 
         return res.status(201).json({ participation });
 

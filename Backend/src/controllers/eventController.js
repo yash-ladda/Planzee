@@ -174,13 +174,23 @@ export const getSingleEvent = async (req, res, next) => {
         //find the event by id
         const event = await Event.findById(id);
 
-        //if event not found the send this response
+        //if event not found then send this response
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
 
+        let participation = null;        
+
+        if (req.user) {            
+            participation = await Participation.findOne({
+                eventId: id,
+                userId: req.user._id,
+                status: "ACTIVE" || "WAITLISTED" || "VOLUNTEER"
+            });            
+        }
+
         //else return the event
-        res.status(200).json({ event });
+        res.status(200).json({ event, participation });
     }
     catch (err) {
         // invalid ObjectId case

@@ -7,6 +7,7 @@ import EventsList from "./pages/EventsList";
 import Login from "./pages/Login";
 import Register from "./pages/Signup";
 import Navbar from "./components/Navbar";
+import EventDetails from "./pages/EventDetails";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route path="/events/:id" element={<EventDetails />}></Route>
                 </Routes>
             </BrowserRouter>
         </AuthProvider>
