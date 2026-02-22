@@ -82,6 +82,17 @@ export default function EventDetails () {
         }
     };
 
+    const handleOpenRegistration = async () => {
+        try {
+            const res = await api.patch(`/events/${id}/publish`);            
+            setEvent(res.data.event);
+            alert("Registrations opened for this event");
+        }
+        catch (err) {
+            console.log("Err: ", err);
+        }
+    };
+
     return (
         <div>
             {!event ? 
@@ -143,20 +154,36 @@ export default function EventDetails () {
                             )
                         }
 
+                        {
+                            event.state == "DRAFT" && (
+                                <button onClick={handleOpenRegistration}>Open Registration</button>
+                            )
+                        }
+
                         {isLoggedIn &&
                             isOrganizer && 
                                 participants  && (
                                 <div>
                                     <br /><br />
-                                    <h2>Participants of this Event</h2>   
+                                    {
+                                        (participants?.attendees?.length > 0 ||
+                                        participants?.waitlisted?.length > 0  ||
+                                        participants?.volunteers?.length > 0 ) && (
+                                            <h2>Participants of this Event</h2>   
+                                        )
+                                    }
                                     {
                                         participants?.attendees?.length > 0 && (
                                             <div>
                                                 <h3>Attendees</h3>
                                                 <ul>
                                                     {   
-                                                        participants.attendees.map((p) => (
-                                                            <li key={p._id}>{p._id}</li>
+                                                    participants.attendees.map(({ _id, userId: user}) => (
+                                                        <li key={_id}>
+                                                            <h5>{user.name}</h5>
+                                                            <p>{user.username}</p>
+                                                            <p>{user.name}</p>
+                                                        </li>
                                                         ))
                                                     }
                                                 </ul>
@@ -170,9 +197,13 @@ export default function EventDetails () {
                                                 <h3>Waitlisted participants</h3>
                                                 <ul>
                                                     {
-                                                        participants.waitlisted.map((p) => (
-                                                            <li key={p._id}>{p._id}</li>
-                                                        ))
+                                                    participants.waitlisted.map(({ _id, userId: user }) => (
+                                                        <li key={_id}>
+                                                            <h5>{user.name}</h5>
+                                                            <p>{user.username}</p>
+                                                            <p>{user.name}</p>
+                                                        </li>
+                                                    ))
                                                     }
                                                 </ul>
                                             </div>
@@ -185,9 +216,13 @@ export default function EventDetails () {
                                                 <h3>Volunteers</h3>
                                                 <ul>
                                                     {
-                                                        participants.volunteers.map((p) => (
-                                                            <li key={p._id}>{p._id}</li>
-                                                        ))
+                                                    participants.volunteers.map(({ _id, userId: user }) => (
+                                                        <li key={_id}>
+                                                            <p>Name: {user.name}</p>
+                                                            <p>Username: {user.username}</p>
+                                                            <p>Email: {user.email}</p>
+                                                        </li>
+                                                    ))
                                                     }
                                                 </ul>
                                             </div>

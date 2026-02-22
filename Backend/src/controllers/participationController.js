@@ -235,19 +235,19 @@ export const getEventParticipants = async (req, res, next) => {
             eventId: id,
             role: "ATTENDEE",
             status: "ACTIVE"
-        });
+        }).populate("userId");
 
         const waitlisted = await Participation.find({
             eventId: id,
             role: "ATTENDEE",
             status: "WAITLISTED"
-        });
+        }).populate("userId");
 
         const volunteers = await Participation.find({
             eventId: id,
             role: "VOLUNTEER",
             status: "ACTIVE"
-        });
+        }).populate("userId");
 
         return res.status(200).json({
             "attendees": attendees,

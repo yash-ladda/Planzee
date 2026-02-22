@@ -119,6 +119,40 @@ export const editEvent = async (req, res, next) => {
     }
 };
 
+export const publishEvent = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { id } = req.params;
+
+        const event = await Event.findById(id);
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        // Check ownership
+        if (!user._id.equals(event.createdBy)) {
+            return res.status(403).json({
+                message: "You are not allowed to publish this event"
+            });
+        }
+
+        // Only allow DRAFT → REG_OPEN
+        if (event.state !== "DRAFT") {
+            return res.status(400).json({
+                message: "Only draft events can be published"
+            });
+        }
+
+        event.state = "REG_OPEN";
+        await event.save();
+
+        res.status(200).json({event});
+
+    } catch (err) {
+        next(err);
+    }
+};
+
 export const getEvent = async (req, res, next) => {
     try {
         const { category, type } = req.query;
