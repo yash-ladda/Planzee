@@ -68,7 +68,7 @@ export const getReviews = async (req, res, next) => {
             return res.status(404).json({ message: "Event not found" });
         }
 
-        const reviews = await Review.find({ eventId });
+        const reviews = await Review.find({ eventId }).populate("userId");
 
         const totalReviews = reviews.length;
 
