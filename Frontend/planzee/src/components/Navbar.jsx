@@ -19,19 +19,26 @@ export default function Navbar() {
 
             {isLoggedIn ? (
                 <>
-                    <button onClick={handleLogout}>Logout</button>
+                    <Link to="/events/new" style={{marginLeft: "15px"}}>
+                        Create New Event
+                    </Link>
                     <Link to="/profile" style={{marginLeft: "15px"}}>
                         Profile
                     </Link>
+                    <button onClick={handleLogout} style={{position: "absolute", right: "0", marginRight: "30px"}}>Logout</button>
                 </>
             ) : (
                 <>
-                    <Link to="/login" style={{ marginRight: "15px" }}>
+                <button style={{ position: "absolute", right: "0", marginRight: "30px" }}>
+                    <Link to="/login" style={{ textDecoration: "none"}}>
                         Login
                     </Link>
-                    <Link to="/register">
+                </button>
+                <button style={{ position: "absolute", right: "0", marginRight: "90px" }}>
+                    <Link to="/register" style={{ textDecoration: "none" }}>
                         Register
                     </Link>
+                </button>
                 </>
             )}
         </nav>

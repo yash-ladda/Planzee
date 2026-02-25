@@ -121,7 +121,7 @@ export default function EventDetails() {
         if (event?.state === "COMPLETED") {
             const getReviews = async () => {
                 try {
-                    const res = await api.get(`/events/${id}/reviews`);
+                    const res = await api.get(`/events/${id}/reviews`);                    
                     setReviews(res.data.reviews);
                     setAvgRating(res.data.avgRating);
                     setTotalReviews(res.data.totalReviews);
@@ -168,7 +168,8 @@ export default function EventDetails() {
                             )}
                             {!participation && event.state === "REG_OPEN" && (
                                 <div>
-                                    <button onClick={handleJoinEvent}>Join Event</button>
+                                    <button onClick={handleJoinEvent}>Join as Attendee</button>
+                                    &nbsp; &nbsp; &nbsp;
                                     <button onClick={handleJoinAsVolunteer}>Join as volunteer</button>
                                 </div>
                             )}
@@ -255,9 +256,10 @@ export default function EventDetails() {
                             )}
 
                     <br />
-                    <h3>Reviews</h3>
+                    
                     {event?.state === "COMPLETED" && (
                         <div>
+                            <h3>Reviews</h3>
                             {totalReviews > 0 ? (
                                 <div>
                                     <h4>Average Rating: {avgRating}</h4>

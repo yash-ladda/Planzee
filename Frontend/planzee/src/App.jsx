@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Signup";
 import Navbar from "./components/Navbar";
 import EventDetails from "./pages/EventDetails";
+import CreateEvent from "./pages/CreateEvent";
 
 function App() {
     return (
@@ -28,6 +29,14 @@ function App() {
                         }
                     />
                     <Route path="/events/:id" element={<EventDetails />}></Route>
+                    <Route 
+                        path="/events/new"
+                        element={
+                            <ProtectedRoute>
+                                <CreateEvent />
+                            </ProtectedRoute>
+                        }
+                    />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>
